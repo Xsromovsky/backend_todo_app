@@ -2,21 +2,28 @@ import { Request, Response } from "express";
 import bcrypt from 'bcryptjs'
 import { PrismaClient } from "@prisma/client";
 import { generateAccessToken, generateRefreshToken } from "../utils/generate_tokens";
-
-const prisma = new PrismaClient()
+import prisma from "../utils/prismaClient";
+// const prisma = new PrismaClient()
 
 
 export const signupUser = async (req: Request, res: Response) => {
-    const password = req.body.password;
+    const {email, password, username} = req.body;
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10)
 
         const user = await prisma.user.create({
             data: {
-                name: req.body.name,
-                email: req.body.email,
+                name: username,
+                email: email,
                 password: hashedPassword
+            }
+        })
+        const inbox = await prisma.inboxTasks.create({
+            data:{
+                owner:{
+                    connect:{id: user.id}
+                }
             }
         })
         res.status(201).json(user)

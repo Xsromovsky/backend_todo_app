@@ -1,14 +1,15 @@
-import { Router, Request, Response } from "express";
-import { addTask, deleteTaskById, getTasksByUserId, editTask, getSingleTaskById } from "../controllers/taskController";
+import { Router} from "express";
 import { accessTokenAuth } from "../middleware/auth";
+import { addTaskToInbox, deleteTaskById, getAllTasks, updateTask } from "../controllers/task/inboxController";
 
 const router = Router();
+// inbox tasks
+router.post('/inbox/add', accessTokenAuth, addTaskToInbox)
+router.put('/inbox', accessTokenAuth, updateTask)
+router.get('/inbox/all', accessTokenAuth, getAllTasks)
+router.delete('/inbox/:taskId', accessTokenAuth, deleteTaskById)
 
-router.post('/add', accessTokenAuth, addTask)
-// router.post('/edit', loginUser)
-router.get('/all', accessTokenAuth, getTasksByUserId)
-// router.get('/all', accessTokenAuth, )
-router.delete('/:taskId', accessTokenAuth, deleteTaskById)
-router.put('/:taskId', accessTokenAuth, editTask)
-router.get('/:taskId', accessTokenAuth, getSingleTaskById)
+// project
+
+
 export default router;

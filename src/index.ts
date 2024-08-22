@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
-import bcrypt from 'bcryptjs'
 import userRouter from './routes/userRoute'
 import taskRouter from './routes/taskRoute'
 import devRoute from './routes/devRoutes'
+import projectRoute from './routes/projectRoute'
 import cors from 'cors';
 
 
@@ -21,6 +21,7 @@ app.use(express.json())
 
 app.use('/user',userRouter)
 app.use('/task', taskRouter)
+app.use('/project', projectRoute)
 app.use('/dev', devRoute)
 
 app.listen(port, () => {

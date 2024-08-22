@@ -2,9 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import { ACCESS_SECRET_KEY, REFRESH_SECRET_KEY } from "../utils/generate_tokens";
 import { Request, Response, NextFunction } from 'express';
 import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
-import { json } from "stream/consumers";
-
-const prisma = new PrismaClient()
+import prisma from "../utils/prismaClient";
+// const prisma = new PrismaClient()
 
 export const accessTokenAuth = async (req: Request, res: Response, next: NextFunction) => {
     try {

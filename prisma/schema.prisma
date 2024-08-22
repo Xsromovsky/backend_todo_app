@@ -11,22 +11,73 @@ datasource db {
 }
 
 
+// model User {
+//   id    Int     @id @default(autoincrement())
+//   email String  @unique
+//   name  String
+//   password String
+//   refresh_token String?
+//   tasks Tasks[]
+//   Projects Projects[]
+// }
+
+// model Tasks {
+//   id Int @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   title String
+//   description String
+//   isDone Boolean @default(false)
+//   ownerId Int
+//   owner User @relation(fields: [ownerId], references: [id])
+// }
+
+// model Projects{
+//   id String @id @default(uuid())
+//   label String
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   ownerId Int
+//   owner User @relation(fields: [ownerId], references: [id])
+// }
+
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String
+  id String @id @default(cuid())
+  email String @unique
+  name String
   password String
   refresh_token String?
-  tasks Tasks[]
+  inbox InboxTasks?
+  projects Projects[]
 }
 
 model Tasks {
-  id Int @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id String @id @default(cuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
   title String
-  description String
+  description String?
   isDone Boolean @default(false)
-  ownerId Int
-  owner User @relation(fields: [ownerId], references: [id])
+  project Projects? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String?
+  inbox_tasks InboxTasks? @relation(fields: [inbox_taskId], references: [id])
+  inbox_taskId String?
+}
+
+model InboxTasks {
+  id String @id @default(uuid())
+  label String @default("Inbox")
+  tasks Tasks[] 
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String @unique
+}
+
+model Projects{
+  id String @id @default(uuid())
+  label String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String 
+  tasks Tasks[]
 }
