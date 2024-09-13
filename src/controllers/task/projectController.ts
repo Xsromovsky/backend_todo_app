@@ -43,7 +43,9 @@ export const deleteProjectById = async (req: Request, res: Response) => {
                 id: projectId
             }
         })
-        res.status(200).json({message: "project successfully deleted"})
+        
+        
+        res.status(200).json({message: "project successfully deleted", id: projectId})
     }catch(err) {
         console.log(err);
         if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -200,7 +202,7 @@ export const deleteTaskById = async (req: Request, res: Response) =>{
                 projectId: projectId
             }
         })
-        res.status(200).json({message: "Task deleted successfully"})
+        res.status(200).json({message: "Task deleted successfully", taskId, projectId})
        
     }catch(err){
         console.log(err);

@@ -1,15 +1,17 @@
 import { Request, Response } from "express";
 import bcrypt from 'bcryptjs'
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { generateAccessToken, generateRefreshToken } from "../utils/generate_tokens";
 import prisma from "../utils/prismaClient";
 // const prisma = new PrismaClient()
 
 
 export const signupUser = async (req: Request, res: Response) => {
-    const {email, password, username} = req.body;
+    const { email, password, username } = req.body;
 
     try {
+        console.log(`${username} - ${password} - ${email}`);
+
         const hashedPassword = await bcrypt.hash(password, 10)
 
         const user = await prisma.user.create({
@@ -20,16 +22,21 @@ export const signupUser = async (req: Request, res: Response) => {
             }
         })
         const inbox = await prisma.inboxTasks.create({
-            data:{
-                owner:{
-                    connect:{id: user.id}
+            data: {
+                owner: {
+                    connect: { id: user.id }
                 }
             }
         })
-        res.status(201).json(user)
+        res.status(201).json({ message: "User successfully created" })
     } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002') {
+                return res.status(409).json({ message: 'Email address already in use' })
+            }
+        }
         console.log("Error: ", error);
-        res.status(500).json({ error: "Error creating user" })
+        res.status(500).json({ message: "Error creating user" })
     }
 }
 
@@ -45,7 +52,7 @@ export const loginUser = async (req: Request, res: Response) => {
         });
 
         if (!user) {
-            return res.status(404).json({ error: "User not found" });
+            return res.status(404).json({ message: "User not found" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password)
@@ -64,10 +71,10 @@ export const loginUser = async (req: Request, res: Response) => {
             });
             res.status(200).json({ accessToken: accessToken, refreshToken: refreshToken, });
         } else {
-            res.status(401).json({ error: "Invalid credentials" });
+            res.status(401).json({ message: "Invalid credentials" });
         }
     } catch (error) {
-        res.status(500).json({ error: error })
+        res.status(500).json({ message: error })
     }
 }
 export const logout = async (req: Request, res: Response) => {
@@ -107,7 +114,7 @@ export const getUserDetails = async (req: Request, res: Response) => {
         }
         res.status(200).json(user);
     } catch (error) {
-        res.status(500).json({ error: error })
+        res.status(500).json({ message: error })
     }
 }
 
@@ -120,7 +127,7 @@ export const refreshToken = async (req: Request, res: Response) => {
 
         res.status(201).json({ accessToken: accessToken });
     } catch (error) {
-        res.status(500).json({ error: error });
+        res.status(500).json({ message: error });
     }
 }
 

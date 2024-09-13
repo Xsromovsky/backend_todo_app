@@ -92,7 +92,7 @@ export const deleteTaskById = async (req: Request, res: Response) => {
                 id: taskId
             }
         })
-        res.status(200).json({message: "task deleted successfully"})
+        res.status(200).json({message: "task deleted successfully", taskId})
         
     }catch(err){
         console.log(err);
